@@ -19,10 +19,9 @@ func (shop *BarberShop) AddBarber(barberName string) {
 	// добавляем барбера
 	shop.NumberOfBarbers++
 	go func() {
-		// барбер спит
-		isSleeping := false
-		color.Yellow("%s пошел в комнату ожидания проверить есть ли посетители...", barberName)
 		for {
+			isSleeping := false
+			color.Yellow("%s пошел в комнату ожидания проверить есть ли посетители...", barberName)
 			// если клиентов нет идем спать.
 			if len(shop.ClientsChan) == 0 {
 				color.Yellow("%s пошел спать, так как клиентов нет.", barberName)
@@ -38,6 +37,10 @@ func (shop *BarberShop) AddBarber(barberName string) {
 				// стрижка
 				shop.cutHair(barberName, client)
 			} else {
+				if isSleeping {
+					color.Yellow("%s просыпается так как пора идти домой", barberName)
+					isSleeping = false
+				}
 				// если магазин закрыт то барбер идет домой
 				shop.sendBarberToHome(barberName)
 				return
@@ -81,7 +84,7 @@ func (shop *BarberShop) AddClient(clientName string) {
 	if shop.Open {
 		select {
 		case shop.ClientsChan <- clientName:
-			color.Yellow("%s занял место в зале ожидания. ")
+			color.Yellow("%s занял место в зале ожидания.", clientName)
 		default:
 			color.Red("В зале ожидания нет места, %s уходит!!!", clientName)
 		}

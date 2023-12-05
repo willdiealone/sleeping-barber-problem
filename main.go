@@ -72,7 +72,9 @@ func main() {
 
 	// запускаем парикмахерскую как горутину
 	shopClosing := make(chan bool)
+	defer close(shopClosing)
 	closed := make(chan bool)
+	defer close(closed)
 
 	go func() {
 		<-time.After(timeOpen)
